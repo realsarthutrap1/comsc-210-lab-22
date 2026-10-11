@@ -45,43 +45,79 @@ int main() {
     list.push_back(50);
     show_list(list, "Starting list", "10 20 30 40 50");
 
-    // remove nodes from both ends
-    list.pop_front();
-    show_list(list, "pop_front(): head", "20 30 40 50");
-    list.pop_back();
-    show_list(list, "pop_back(): tail", "20 30 40");
-
-    // delete by value at the middle and both ends
-    list.delete_val(30);
-    show_list(list, "delete_val(30): middle", "20 40");
-    list.delete_val(20);
-    show_list(list, "delete_val(20): head", "40");
-    list.delete_val(40);
-    show_list(list, "delete_val(40): only node", "List is empty");
-
-    // reuse the empty list before normal scope cleanup
-    list.push_front(60);
-    list.push_back(70);
-    show_list(list, "Reuse after deletions", "60 70");
-
     // delete middle, head, and tail by zero-based position
-    list.push_back(80);
-    list.push_back(90);
-    list.push_back(100);
-    show_list(list, "Starting list for position deletion", "60 70 80 90 100");
     list.delete_pos(2);
-    show_list(list, "delete_pos(2): middle", "60 70 90 100");
+    show_list(list, "delete_pos(2): middle", "10 20 40 50");
     list.delete_pos(0);
-    show_list(list, "delete_pos(0): head", "70 90 100");
+    show_list(list, "delete_pos(0): head", "20 40 50");
     list.delete_pos(2);
-    show_list(list, "delete_pos(2): tail", "70 90");
+    show_list(list, "delete_pos(2): tail", "20 40");
 
     // invalid positions leave the list unchanged
     list.delete_pos(-1);
-    show_list(list, "delete_pos(-1): invalid", "70 90");
+    show_list(list, "delete_pos(-1): invalid", "20 40");
     list.delete_pos(2);
-    show_list(list, "delete_pos(2): out of range", "70 90");
+    show_list(list, "delete_pos(2): out of range", "20 40");
 
+    list.pop_front();
+    show_list(list, "pop_front(): two nodes", "40");
+    list.pop_back();
+    show_list(list, "pop_back(): only node", "List is empty");
+
+    // all deletion methods are safe on an empty list
+    list.pop_front();
+    show_list(list, "pop_front(): empty", "List is empty");
+    list.pop_back();
+    show_list(list, "pop_back(): empty", "List is empty");
+    list.delete_pos(0);
+    show_list(list, "delete_pos(0): empty", "List is empty");
+    list.delete_val(99);
+    show_list(list, "delete_val(99): empty", "List is empty");
+
+    // remove single nodes and reuse the list
+    list.push_back(60);
+    list.delete_pos(0);
+    show_list(list, "delete_pos(0): only node", "List is empty");
+    list.push_front(70);
+    list.pop_front();
+    show_list(list, "pop_front(): only node", "List is empty");
+    list.push_back(80);
+    list.delete_val(80);
+    show_list(list, "delete_val(80): only node", "List is empty");
+
+    list.push_front(20);
+    list.push_front(10);
+    list.push_back(30);
+    list.pop_back();
+    show_list(list, "pop_back(): multiple nodes", "10 20");
+    list.pop_back();
+    list.pop_back();
+
+    // duplicate values remove only the first match
+    list.push_back(10);
+    list.push_back(20);
+    list.push_back(30);
+    list.push_back(20);
+    list.push_back(40);
+    show_list(list, "Starting list with duplicates", "10 20 30 20 40");
+    list.delete_val(20);
+    show_list(list, "delete_val(20): first duplicate", "10 30 20 40");
+    list.delete_val(10);
+    show_list(list, "delete_val(10): head", "30 20 40");
+    list.delete_val(20);
+    show_list(list, "delete_val(20): middle", "30 40");
+    list.delete_val(40);
+    show_list(list, "delete_val(40): tail", "30");
+    list.delete_val(99);
+    show_list(list, "delete_val(99): missing", "30");
+
+    // retained insertion methods still work after deletions
+    list.push_front(10);
+    list.insert_after(20, 0);
+    list.push_back(40);
+    show_list(list, "Reuse after deletions", "10 20 30 40");
+
+    // normal scope exit destroys the remaining nodes
     return 0;
 }
 

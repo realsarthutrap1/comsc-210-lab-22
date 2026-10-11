@@ -25,6 +25,7 @@ public:
     void push_back(int value);
     void push_front(int value);
     void insert_after(int value, int position);
+    void delete_pos(int position);
     void pop_front();
     void pop_back();
     void delete_val(int value);
@@ -62,6 +63,24 @@ int main() {
     list.push_front(60);
     list.push_back(70);
     show_list(list, "Reuse after deletions", "60 70");
+
+    // delete middle, head, and tail by zero-based position
+    list.push_back(80);
+    list.push_back(90);
+    list.push_back(100);
+    show_list(list, "Starting list for position deletion", "60 70 80 90 100");
+    list.delete_pos(2);
+    show_list(list, "delete_pos(2): middle", "60 70 90 100");
+    list.delete_pos(0);
+    show_list(list, "delete_pos(0): head", "70 90 100");
+    list.delete_pos(2);
+    show_list(list, "delete_pos(2): tail", "70 90");
+
+    // invalid positions leave the list unchanged
+    list.delete_pos(-1);
+    show_list(list, "delete_pos(-1): invalid", "70 90");
+    list.delete_pos(2);
+    show_list(list, "delete_pos(2): out of range", "70 90");
 
     return 0;
 }
@@ -131,6 +150,32 @@ void DoublyLinkedList::insert_after(int value, int position) {
     else
         tail = newNode;
     temp->next = newNode;
+}
+
+void DoublyLinkedList::delete_pos(int position) {
+    if (position < 0) {
+        cout << "Position must be >= 0." << endl;
+        return;
+    }
+
+    Node* temp = head;
+    for (int i = 0; i < position && temp; ++i)
+        temp = temp->next;
+
+    if (!temp) {
+        cout << "Position exceeds list size. Node not deleted.\n";
+        return;
+    }
+
+    if (temp == head) {
+        pop_front();
+    } else if (temp == tail) {
+        pop_back();
+    } else {
+        temp->prev->next = temp->next;
+        temp->next->prev = temp->prev;
+        delete temp;
+    }
 }
 
 void DoublyLinkedList::pop_front() {
